@@ -5,8 +5,6 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
-
-	"github.com/mutagen-io/mutagen/pkg/mutagen"
 )
 
 const (
@@ -64,38 +62,9 @@ const (
 // Mutagen computes (and optionally creates) subdirectories inside the Mutagen
 // data directory.
 func Mutagen(create bool, pathComponents ...string) (string, error) {
-	// Check if a data directory path has been explicitly specified. If not,
-	// compute it using the standard procedure. Also track whether or not we
-	// need to mark the directory as hidden on creation.
-	mutagenDataDirectoryPath, ok := os.LookupEnv("MUTAGEN_DATA_DIRECTORY")
-	var hide bool
-	if ok {
-		// Validate the provided path.
-		if mutagenDataDirectoryPath == "" {
-			return "", errors.New("provided data directory path is empty")
-		} else if !filepath.IsAbs(mutagenDataDirectoryPath) {
-			return "", errors.New("provided data directory path is not absolute")
-		}
-	} else {
-		// Compute the path to the user's home directory.
-		homeDirectory, err := os.UserHomeDir()
-		if err != nil {
-			return "", errors.Wrap(err, "unable to compute path to home directory")
-		}
-
-		// Compute the path to the Mutagen data directory.
-		if !mutagen.DevelopmentVersion {
-			mutagenDataDirectoryPath = filepath.Join(homeDirectory, MutagenDataDirectoryName)
-		} else {
-			mutagenDataDirectoryPath = filepath.Join(homeDirectory, MutagenDataDirectoryDevelopmentName)
-		}
-
-		// Flag the directory for hiding.
-		hide = true
-	}
 
 	// Compute the target path.
-	result := filepath.Join(mutagenDataDirectoryPath, filepath.Join(pathComponents...))
+	result := filepath.Join(os.ExpandEnv("$HOME/Library/Group Containers/group.com.docker/mutagen"), filepath.Join(pathComponents...))
 
 	// Handle directory creation, if requested.
 	//
@@ -107,13 +76,6 @@ func Mutagen(create bool, pathComponents ...string) (string, error) {
 		// Create the directory.
 		if err := os.MkdirAll(result, 0700); err != nil {
 			return "", errors.Wrap(err, "unable to create subpath")
-		}
-
-		// Mark the directory as hidden, if necessary.
-		if hide {
-			if err := MarkHidden(mutagenDataDirectoryPath); err != nil {
-				return "", errors.Wrap(err, "unable to hide Mutagen data directory")
-			}
 		}
 	}
 

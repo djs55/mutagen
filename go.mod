@@ -14,6 +14,7 @@ require (
 	github.com/hashicorp/yamux v0.0.0-20181012175058-2f1d1f20f75d
 	github.com/hectane/go-acl v0.0.0-20190227043046-e28f47eff0c4
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/linuxkit/virtsock v0.0.0-20180830132707-8e79449dea07
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.7
 	github.com/mutagen-io/fsevents v0.0.0-20180903111129-10556809b434

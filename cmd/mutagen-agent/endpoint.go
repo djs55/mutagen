@@ -2,19 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/pkg/errors"
-
+	"github.com/linuxkit/virtsock/pkg/vsock"
 	"github.com/spf13/cobra"
 
 	"github.com/mutagen-io/mutagen/cmd"
 	"github.com/mutagen-io/mutagen/pkg/agent"
 	"github.com/mutagen-io/mutagen/pkg/housekeeping"
 	"github.com/mutagen-io/mutagen/pkg/logging"
-	"github.com/mutagen-io/mutagen/pkg/mutagen"
 	"github.com/mutagen-io/mutagen/pkg/synchronization/endpoint/remote"
 )
 
@@ -58,32 +57,20 @@ func endpointMain(command *cobra.Command, arguments []string) error {
 	defer housekeepingCancel()
 	go housekeepRegularly(housekeepingContext, logging.RootLogger.Sublogger("housekeeping"))
 
-	// Create a connection on standard input/output.
-	connection := newStdioConnection()
-
-	// Perform an agent handshake.
-	if err := agent.ServerHandshake(connection); err != nil {
-		return errors.Wrap(err, "server handshake failed")
+	fmt.Println("VSOCK LISTEN")
+	ln, err := vsock.Listen(uint32(vsock.CIDAny), uint32(4099))
+	if err != nil {
+		return err
 	}
 
-	// Perform a version handshake.
-	if err := mutagen.ServerVersionHandshake(connection); err != nil {
-		return errors.Wrap(err, "version handshake error")
-	}
-
-	// Serve an endpoint on standard input/output and monitor for its
-	// termination.
-	endpointTermination := make(chan error, 1)
-	go func() {
-		endpointTermination <- remote.ServeEndpoint(logging.RootLogger, connection)
-	}()
-
-	// Wait for termination from a signal or the endpoint.
-	select {
-	case sig := <-signalTermination:
-		return errors.Errorf("terminated by signal: %s", sig)
-	case err := <-endpointTermination:
-		return errors.Wrap(err, "endpoint terminated")
+	for {
+		conn, err := ln.Accept()
+		if err != nil {
+			return err
+		}
+		go func() {
+			remote.ServeEndpoint(logging.RootLogger, conn)
+		}()
 	}
 }
 

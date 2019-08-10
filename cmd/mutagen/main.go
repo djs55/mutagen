@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -105,8 +106,25 @@ func main() {
 		defaultHelpFunction(command, arguments)
 	})
 
+	nested.AddCommand(rootCommand, metadata)
 	// Execute the root command.
-	if err := rootCommand.Execute(); err != nil {
+	if err := nested.Execute(); err != nil {
 		os.Exit(1)
 	}
+}
+
+var nested = &cobra.Command{
+	Use: "mutagen",
+}
+
+var metadata = &cobra.Command{
+	Use: "docker-cli-plugin-metadata",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(`{
+     "SchemaVersion": "0.1.0",
+     "Vendor": "Docker Inc.",
+     "Version": "testing",
+     "ShortDescription": "Synchronize files with Docker Desktop"
+}`)
+	},
 }
