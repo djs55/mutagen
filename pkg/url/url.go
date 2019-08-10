@@ -64,6 +64,8 @@ func (u *URL) EnsureValid() error {
 		} else if u.Port != 0 {
 			return errors.New("Docker URL with non-zero port")
 		}
+	} else if u.Protocol == Protocol_Desktop {
+		return nil
 	} else {
 		return errors.New("unknown or unsupported protocol")
 	}

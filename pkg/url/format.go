@@ -12,6 +12,8 @@ func (u *URL) Format(environmentPrefix string) string {
 		return u.formatSSH()
 	} else if u.Protocol == Protocol_Docker {
 		return u.formatDocker(environmentPrefix)
+	} else if u.Protocol == Protocol_Desktop {
+		return fmt.Sprintf("%v", u)
 	}
 	panic("unknown URL protocol")
 }

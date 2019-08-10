@@ -1,6 +1,9 @@
 package url
 
 import (
+	"strings"
+
+	"github.com/mutagen-io/mutagen/pkg/filesystem"
 	"github.com/pkg/errors"
 )
 
@@ -24,6 +27,21 @@ func Parse(raw string, kind Kind, first bool) (*URL, error) {
 	// Docker URL would also be classified as an SCP-style SSH URL), but we only
 	// want them to be parsed according to the better and more specific match.
 	// If we don't match anything, we assume the URL is a local path.
+	if strings.HasPrefix(raw, "desktop://") {
+		raw = strings.Replace(raw, "desktop://", "", 1)
+		if kind == Kind_Synchronization {
+			if normalized, err := filesystem.Normalize(raw); err != nil {
+				return nil, errors.Wrap(err, "unable to normalize path")
+			} else {
+				raw = normalized
+			}
+		}
+		return &URL{
+			Kind:     kind,
+			Protocol: Protocol_Desktop,
+			Path:     raw,
+		}, nil
+	}
 	if isDockerURL(raw) {
 		return parseDocker(raw, kind, first)
 	} else if isSCPSSHURL(raw, kind) {
