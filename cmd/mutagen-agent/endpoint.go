@@ -58,7 +58,7 @@ func endpointMain(command *cobra.Command, arguments []string) error {
 	go housekeepRegularly(housekeepingContext, logging.RootLogger.Sublogger("housekeeping"))
 
 	fmt.Println("VSOCK LISTEN")
-	ln, err := vsock.Listen(uint32(vsock.CIDAny), uint32(4099))
+	ln, err := vsock.Listen(uint32(vsock.CIDAny), uint32(4100))
 	if err != nil {
 		return err
 	}

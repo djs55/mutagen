@@ -41,7 +41,7 @@ func (h *protocolHandler) Connect(
 	}
 
 	// request the setup service
-	remote1 := strings.NewReader(fmt.Sprintf("00000003.%08x\n", 4099))
+	remote1 := strings.NewReader(fmt.Sprintf("00000003.%08x\n", 4100))
 	_, err = io.Copy(conn, remote1)
 	if err != nil {
 		return nil, err
