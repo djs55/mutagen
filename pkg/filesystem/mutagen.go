@@ -2,7 +2,6 @@ package filesystem
 
 import (
 	"os"
-	"path/filepath"
 
 	"github.com/pkg/errors"
 )
@@ -64,7 +63,10 @@ const (
 func Mutagen(create bool, pathComponents ...string) (string, error) {
 
 	// Compute the target path.
-	result := filepath.Join(os.ExpandEnv("$HOME/Library/Group Containers/group.com.docker/mutagen"), filepath.Join(pathComponents...))
+	result, err := mutagenData(pathComponents...)
+	if err != nil {
+		return "", err
+	}
 
 	// Handle directory creation, if requested.
 	//
