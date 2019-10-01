@@ -1,15 +1,9 @@
 package desktop
 
 import (
-	"context"
 	"encoding/binary"
 	"encoding/hex"
-	"fmt"
-	"io"
-	"net"
-	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/mutagen-io/mutagen/pkg/logging"
 	"github.com/mutagen-io/mutagen/pkg/synchronization"
@@ -32,17 +26,7 @@ func (h *protocolHandler) Connect(
 	configuration *synchronization.Configuration,
 	alpha bool,
 ) (synchronization.Endpoint, error) {
-
-	d := net.Dialer{}
-
-	conn, err := d.DialContext(context.Background(), "unix", os.ExpandEnv("$HOME/Library/Containers/com.docker.docker/Data/vms/0/connect"))
-	if err != nil {
-		return nil, err
-	}
-
-	// request the setup service
-	remote1 := strings.NewReader(fmt.Sprintf("00000003.%08x\n", 4100))
-	_, err = io.Copy(conn, remote1)
+	conn, err := Dial()
 	if err != nil {
 		return nil, err
 	}

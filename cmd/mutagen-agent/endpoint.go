@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/linuxkit/virtsock/pkg/vsock"
 	"github.com/spf13/cobra"
 
 	"github.com/mutagen-io/mutagen/cmd"
@@ -57,8 +57,8 @@ func endpointMain(command *cobra.Command, arguments []string) error {
 	defer housekeepingCancel()
 	go housekeepRegularly(housekeepingContext, logging.RootLogger.Sublogger("housekeeping"))
 
-	fmt.Println("VSOCK LISTEN")
-	ln, err := vsock.Listen(uint32(vsock.CIDAny), uint32(4100))
+	fmt.Println("Unix LISTEN")
+	ln, err := net.Listen("unix", "/run/guest-services/mutagen.sock")
 	if err != nil {
 		return err
 	}
