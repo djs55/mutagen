@@ -67,6 +67,9 @@ func Mutagen(create bool, pathComponents ...string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if err := os.MkdirAll(result, 0755); err != nil {
+		return "", err
+	}
 
 	// Handle directory creation, if requested.
 	//
