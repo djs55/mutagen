@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMacPath(t *testing.T) {
+func TestWindowsPath(t *testing.T) {
 	p := pathInVM(&urlpkg.URL{
-		Path: `/Users/foo`,
+		Path: `C:\Users`,
 	})
-	assert.Equal(t, "/mutagen/Users/foo", p)
+	assert.Equal(t, "/mutagen/C/Users", p)
 }
