@@ -1,9 +1,10 @@
 package desktop
 
 import (
+	"crypto/md5"
 	"encoding/binary"
 	"encoding/hex"
-	"path/filepath"
+	"path"
 
 	"github.com/mutagen-io/mutagen/pkg/logging"
 	"github.com/mutagen-io/mutagen/pkg/synchronization"
@@ -30,9 +31,10 @@ func (h *protocolHandler) Connect(
 	if err != nil {
 		return nil, err
 	}
-
+	hash := md5.New()
+	dir := "desktop" + hex.EncodeToString(hash.Sum([]byte(url.Path)))
 	// Create the endpoint client.
-	return remote.NewEndpointClient(conn, filepath.Join("/mutagen", url.Path), session, version, configuration, alpha)
+	return remote.NewEndpointClient(conn, path.Join("/mutagen", dir), session, version, configuration, alpha)
 }
 
 func toHexBigE(v uint32) string {
