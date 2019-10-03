@@ -12,7 +12,7 @@ import (
 	urlpkg "github.com/mutagen-io/mutagen/pkg/url"
 )
 
-const mutagenVMDir = "/mutagen"
+const mutagenVMDir = "/var/lib/mutagen"
 
 // protocolHandler implements the session.ProtocolHandler interface for
 // connecting to remote endpoints over SSH. It uses the agent infrastructure
