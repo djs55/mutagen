@@ -3,13 +3,16 @@ package desktop
 import (
 	"encoding/binary"
 	"encoding/hex"
-	"path/filepath"
+	"path"
+	"unicode"
 
 	"github.com/mutagen-io/mutagen/pkg/logging"
 	"github.com/mutagen-io/mutagen/pkg/synchronization"
 	"github.com/mutagen-io/mutagen/pkg/synchronization/endpoint/remote"
 	urlpkg "github.com/mutagen-io/mutagen/pkg/url"
 )
+
+const mutagenVMDir = "/mutagen"
 
 // protocolHandler implements the session.ProtocolHandler interface for
 // connecting to remote endpoints over SSH. It uses the agent infrastructure
@@ -32,7 +35,17 @@ func (h *protocolHandler) Connect(
 	}
 
 	// Create the endpoint client.
-	return remote.NewEndpointClient(conn, filepath.Join("/mutagen", url.Path), session, version, configuration, alpha)
+	return remote.NewEndpointClient(conn, pathInVM(url), session, version, configuration, alpha)
+}
+
+func pathInVM(url *urlpkg.URL) string {
+	p := url.Path
+	if len(p) >= 3 && unicode.IsLetter(rune(p[0])) && p[1:3] == `:\` {
+		// drop the drive letter and use only the directory name which contains a hash of the full local path.
+		p = p[3:]
+	}
+	// use path rather than filepath to make Unix-style paths for the VM
+	return path.Join(mutagenVMDir, p)
 }
 
 func toHexBigE(v uint32) string {
