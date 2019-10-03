@@ -2,6 +2,7 @@ package sync
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/pkg/errors"
@@ -160,6 +161,15 @@ func listMain(command *cobra.Command, arguments []string) error {
 		return errors.Wrap(err, "invalid list response received")
 	}
 
+	if listConfiguration.output == "json" {
+		bin, err := json.MarshalIndent(response.SessionStates, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bin))
+		return nil
+	}
+
 	// Handle output based on whether or not any sessions were returned.
 	if len(response.SessionStates) > 0 {
 		for _, state := range response.SessionStates {
@@ -199,6 +209,8 @@ var listConfiguration struct {
 	// labelSelector encodes a label selector to be used in identifying which
 	// sessions should be paused.
 	labelSelector string
+	// output format
+	output string
 }
 
 func init() {
@@ -215,4 +227,5 @@ func init() {
 	// Wire up list flags.
 	flags.BoolVarP(&listConfiguration.long, "long", "l", false, "Show detailed session information")
 	flags.StringVar(&listConfiguration.labelSelector, "label-selector", "", "List sessions matching the specified label selector")
+	flags.StringVar(&listConfiguration.output, "output", "", "Output format")
 }
