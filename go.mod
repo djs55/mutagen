@@ -23,7 +23,6 @@ require (
 	github.com/shibukawa/extstat v0.0.0-20150809151201-4113c04d0977
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3
-	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20190418161225-b43e412143f9 // indirect
 	golang.org/x/net v0.0.0-20190415214537-1da14a5a36f2 // indirect
 	golang.org/x/sys v0.0.0-20190418153312-f0ce4c0180be
