@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/pkg/errors"
 )
 
 func mutagenData(pathComponents ...string) (string, error) {
@@ -13,8 +15,9 @@ func mutagenData(pathComponents ...string) (string, error) {
 	}
 
 	dir := filepath.Join(localAppData, "Docker", "mutagen")
-	if fi, err := os.Stat(dir); err == nil && fi.IsDir() {
-		return dir, nil
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return "", errors.Wrapf(err, "unable to create %s", dir)
 	}
-	return "", fmt.Errorf("%s does not exist", dir)
+
+	return dir, nil
 }
