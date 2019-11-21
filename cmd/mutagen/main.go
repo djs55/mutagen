@@ -8,6 +8,7 @@ import (
 
 	"github.com/mutagen-io/mutagen/cmd"
 	"github.com/mutagen-io/mutagen/cmd/mutagen/daemon"
+	"github.com/mutagen-io/mutagen/cmd/mutagen/feature"
 	"github.com/mutagen-io/mutagen/cmd/mutagen/forward"
 	"github.com/mutagen-io/mutagen/cmd/mutagen/project"
 	"github.com/mutagen-io/mutagen/cmd/mutagen/sync"
@@ -120,6 +121,9 @@ var nested = &cobra.Command{
 var metadata = &cobra.Command{
 	Use: "docker-cli-plugin-metadata",
 	Run: func(cmd *cobra.Command, args []string) {
+		if !feature.IsEnabled("mutagenV0") {
+			os.Exit(1)
+		}
 		fmt.Println(`{
      "SchemaVersion": "0.1.0",
      "Vendor": "Docker Inc.",
