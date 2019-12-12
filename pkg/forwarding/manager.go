@@ -9,6 +9,7 @@ import (
 	"github.com/mutagen-io/mutagen/pkg/filesystem"
 	"github.com/mutagen-io/mutagen/pkg/identifier"
 	"github.com/mutagen-io/mutagen/pkg/logging"
+	"github.com/mutagen-io/mutagen/pkg/identifier"
 	"github.com/mutagen-io/mutagen/pkg/selection"
 	"github.com/mutagen-io/mutagen/pkg/state"
 	"github.com/mutagen-io/mutagen/pkg/url"
@@ -193,7 +194,7 @@ func (m *Manager) Create(
 	// Create a unique session identifier.
 	identifier, err := identifier.New(identifier.PrefixForwarding)
 	if err != nil {
-		return "", errors.Wrap(err, "unable to generate UUID for session")
+		return "", errors.Wrap(err, "unable to generate identifier for session")
 	}
 
 	// Attempt to create a session.
