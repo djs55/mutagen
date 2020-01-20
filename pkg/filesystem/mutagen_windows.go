@@ -14,7 +14,7 @@ func mutagenData(pathComponents ...string) (string, error) {
 		return "", fmt.Errorf("unable to get 'LOCALAPPDATA'")
 	}
 
-	dir := filepath.Join(localAppData, "Docker", "mutagen")
+	dir := filepath.Join(filepath.Join(localAppData, "Docker", "mutagen"), filepath.Join(pathComponents...))
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return "", errors.Wrapf(err, "unable to create %s", dir)
 	}
